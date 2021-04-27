@@ -90,3 +90,20 @@ def get_create_specific_album_tracks(request, album_id):
         return JsonResponse({"id": exist[0].ID, "album_id": exist[0].album_id.ID, "name": exist[0].name, 
         "duration": exist[0].duration, "times_played": exist[0].times_played,
         "artist": exist[0].artists, "album": exist[0].albums, "self": exist[0].self_url}, status=409)
+
+@csrf_exempt
+def play_tracks(request, album_id):
+  if request.method == 'PUT':
+    album = models.Album.objects.filter(ID = album_id)
+
+    if len(album) != 0:
+      tracks = Track.objects.filter(album_id=album[0])
+
+      for track in tracks:
+        track.times_played += 1
+        track.save()
+      
+      return JsonResponse({"msg": "canciones del álbum reproducidas"}, status=200)
+
+    else:
+      return JsonResponse({"msg": "álbum no encontrado"}, status=404)

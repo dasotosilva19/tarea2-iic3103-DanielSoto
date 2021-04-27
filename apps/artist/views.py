@@ -150,3 +150,23 @@ def get_artist_tracks(request, artist_id):
 
     else:
       return JsonResponse({'msg': 'artista no encontrado'}, status=404)
+
+@csrf_exempt
+def play_tracks(request, artist_id):
+  if request.method == 'PUT':
+    artist = models.Artist.objects.filter(ID=artist_id)
+
+    if len(artist) != 0:
+      albums = Album.objects.filter(artist_id = artist_id)
+
+      for album in albums:
+        tracks = Track.objects.filter(album_id=album.ID)
+
+        for track in tracks:
+          track.times_played += 1
+          track.save()
+
+      return JsonResponse({'msg': 'todas las canciones del artista fueron reproducidas'}, status=200)
+
+    else:
+      return JsonResponse({'msg': 'artista no encontrado'}, status=404)

@@ -29,3 +29,18 @@ def get_specific_track(request, track_id):
     
     else:
       return JsonResponse({'msg': 'Canción no encontrada'}, status=404)
+
+@csrf_exempt
+def play_track(request, track_id):
+  if request.method == 'PUT':
+
+    track = models.Track.objects.filter(ID = track_id)
+
+    if len(track) != 0:
+      track[0].times_played += 1
+      track[0].save()
+
+      return JsonResponse({"msg": "canción reproducida"}, status=200)
+
+    else:
+      return JsonResponse({"msg": "canción no encontrada"}, status=404)
