@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from . import models
 from apps.track.models import Track
 from django.views.decorators.csrf import csrf_exempt
@@ -8,6 +8,7 @@ from base64 import b64encode
 
 
 # Create your views here.
+@csrf_exempt
 def get_album(request):
   if request.method == 'GET':
 
@@ -19,7 +20,10 @@ def get_album(request):
 
     return JsonResponse(albums_array, status=200, safe=False)
 
+  else:
+    return JsonResponse({}, status=405)
 
+@csrf_exempt
 def get_specific_album(request, album_id):
   if request.method == 'GET':
     exist = models.Album.objects.filter(ID=album_id)
@@ -30,7 +34,21 @@ def get_specific_album(request, album_id):
       "self": exist[0].self_url}, status=200)
 
     else:
-      return JsonResponse({'msg': 'álbum no encontrado'}, status=404)
+      return JsonResponse({}, status=404)
+
+  elif request.method == 'DELETE':
+    exist = models.Album.objects.filter(ID=album_id)
+
+    if len(exist) != 0:
+      exist[0].delete()
+
+      return JsonResponse({}, status=204)
+
+    else:
+      return JsonResponse({}, status=404)
+  
+  else:
+    return JsonResponse({}, status=405)
 
 @csrf_exempt
 def get_create_specific_album_tracks(request, album_id):
@@ -47,16 +65,16 @@ def get_create_specific_album_tracks(request, album_id):
       return JsonResponse(tracks_array, status=200, safe=False)
 
     else:
-      return JsonResponse({'msg': 'álbum no encontrado'}, status=404)
+      return JsonResponse({}, status=404)
   
   elif request.method == 'POST':
     params = json.loads(request.body)
 
     if (not "name" in params.keys()) or (not "duration" in params.keys()):
-      return JsonResponse({"msg": "input inválido"}, status=400)
+      return JsonResponse({}, status=400)
 
-    if (type(params["name"]) != str) or (type(params["duration"]) != float):
-      return JsonResponse({"msg": "input inválido"}, status=400)
+    if (type(params["name"]) != str) or (type(float(params["duration"])) != float):
+      return JsonResponse({}, status=400)
 
 
     name = params['name']+":"+album_id
@@ -65,7 +83,7 @@ def get_create_specific_album_tracks(request, album_id):
     album_exist = models.Album.objects.filter(ID=album_id)
 
     if len(album_exist) == 0:
-      return JsonResponse({'msg': 'álbum no existe'}, status=422)
+      return JsonResponse({}, status=422)
 
     else:
       exist = Track.objects.filter(ID=ID_encoded)
@@ -91,6 +109,9 @@ def get_create_specific_album_tracks(request, album_id):
         "duration": exist[0].duration, "times_played": exist[0].times_played,
         "artist": exist[0].artists, "album": exist[0].albums, "self": exist[0].self_url}, status=409)
 
+  else:
+    return JsonResponse({}, status=405)
+
 @csrf_exempt
 def play_tracks(request, album_id):
   if request.method == 'PUT':
@@ -103,7 +124,10 @@ def play_tracks(request, album_id):
         track.times_played += 1
         track.save()
       
-      return JsonResponse({"msg": "canciones del álbum reproducidas"}, status=200)
+      return JsonResponse({}, status=200)
 
     else:
-      return JsonResponse({"msg": "álbum no encontrado"}, status=404)
+      return JsonResponse({}, status=404)
+
+  else:
+    return JsonResponse({}, status=405)

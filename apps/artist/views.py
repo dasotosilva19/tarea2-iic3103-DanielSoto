@@ -25,10 +25,10 @@ def get_create_artist(request):
     params = json.loads(request.body)
 
     if (not "name" in params.keys()) or (not "age" in params.keys()):
-      return JsonResponse({"msg": "input inválido"}, status=400)
+      return JsonResponse({}, status=400)
 
     if (type(params["name"]) != str) or (type(params["age"]) != int):
-       return JsonResponse({"msg": "input inválido"}, status=400)
+       return JsonResponse({}, status=400)
 
     name = params['name']
     age = params['age']
@@ -55,7 +55,11 @@ def get_create_artist(request):
       "age": exist[0].age, "albums": exist[0].albums, "tracks": exist[0].tracks,
       "self": exist[0].self_url}, status=409)
 
+  else:
+    return JsonResponse({}, status=405)
 
+
+@csrf_exempt
 def get_specific_artist(request, artist_id):
   if request.method == 'GET':
     exist = models.Artist.objects.filter(ID=artist_id)
@@ -66,7 +70,21 @@ def get_specific_artist(request, artist_id):
       "self": exist[0].self_url}, status=200)
 
     else:
-      return JsonResponse({'msg': 'artista no encontrado'}, status=404)
+      return JsonResponse({}, status=404)
+
+  elif request.method == 'DELETE':
+    exist = models.Artist.objects.filter(ID=artist_id)
+
+    if len(exist) != 0:
+      exist[0].delete()
+
+      return JsonResponse({}, status=204)
+
+    else:
+      return JsonResponse({}, status=404)
+
+  else:
+    return JsonResponse({}, status=405)
 
 @csrf_exempt
 def get_create_artist_album(request, artist_id):
@@ -83,16 +101,16 @@ def get_create_artist_album(request, artist_id):
         return JsonResponse(albums_array, status=200, safe=False)
 
       else:
-        return JsonResponse({'msg': 'artista no encontrado'}, status=404)
+        return JsonResponse({}, status=404)
 
     elif request.method == 'POST':
       params = json.loads(request.body)
 
       if (not "name" in params.keys()) or (not "genre" in params.keys()):
-        return JsonResponse({"msg": "input inválido"}, status=400)
+        return JsonResponse({}, status=400)
 
       if (type(params["name"]) != str) or (type(params["genre"]) != str):
-        return JsonResponse({"msg": "input inválido"}, status=400)
+        return JsonResponse({}, status=400)
 
 
       name = params['name']+":"+artist_id
@@ -101,7 +119,7 @@ def get_create_artist_album(request, artist_id):
       artist_exist = models.Artist.objects.filter(ID=artist_id)
 
       if len(artist_exist) == 0:
-        return JsonResponse({'msg': 'artista no existe'}, status=422)
+        return JsonResponse({}, status=422)
 
       else:
         exist = Album.objects.filter(ID=ID_encoded)
@@ -127,6 +145,9 @@ def get_create_artist_album(request, artist_id):
           "genre": exist[0].genre, "artist": exist[0].artists, "tracks": exist[0].tracks,
           "self": exist[0].self_url}, status=409)
 
+    else:
+      return JsonResponse({}, status=405)
+
 @csrf_exempt
 def get_artist_tracks(request, artist_id):
   if request.method == 'GET':
@@ -149,7 +170,10 @@ def get_artist_tracks(request, artist_id):
       return JsonResponse(tracks_array, status=200, safe=False)
 
     else:
-      return JsonResponse({'msg': 'artista no encontrado'}, status=404)
+      return JsonResponse({}, status=404)
+
+  else:
+    return JsonResponse({}, status=405)
 
 @csrf_exempt
 def play_tracks(request, artist_id):
@@ -166,7 +190,10 @@ def play_tracks(request, artist_id):
           track.times_played += 1
           track.save()
 
-      return JsonResponse({'msg': 'todas las canciones del artista fueron reproducidas'}, status=200)
+      return JsonResponse({}, status=200)
 
     else:
-      return JsonResponse({'msg': 'artista no encontrado'}, status=404)
+      return JsonResponse({}, status=404)
+
+  else:
+    return JsonResponse({}, status=405)
