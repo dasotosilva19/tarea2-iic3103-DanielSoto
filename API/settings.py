@@ -85,7 +85,7 @@ WSGI_APPLICATION = 'API.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-DATABASES = {
+"""DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': env('DATABASE_NAME'),
@@ -93,6 +93,14 @@ DATABASES = {
         'PASSWORD': env('DATABASE_PASS'),
 
 
+    }
+}"""
+
+DATABASES = {
+    'default': {
+        'ENGINE': dj_database_url.config(
+            default=config('DATABASE_URL')
+        )
     }
 }
 
