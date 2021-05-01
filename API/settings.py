@@ -13,11 +13,12 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 #from pathlib import Path
 import os
 import dj_database_url
-import environ
+from decouple import config
+#import environ
 
 # Initialise environment variables
-env = environ.Env()
-environ.Env.read_env()
+#env = environ.Env()
+#environ.Env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 #BASE_DIR = Path(__file__).resolve().parent.parent
@@ -31,7 +32,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'django-insecure-^w!bvobhbt#$ilx06g)_hg^*z1#fs#o#40ne*kevp=*g4og*a9'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False #True
 
 ALLOWED_HOSTS = ['*']
 
@@ -149,6 +150,10 @@ USE_TZ = True
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
 STATIC_URL = '/static/'
+
+STATICFILES_DIRS = (
+    os.path.join(PROJECT_ROOT, 'static'),
+)
 
 # Extra lookup directories for collectstatic to find static files
 STATICFILES_DIRS = (
