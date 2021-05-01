@@ -90,9 +90,9 @@ def get_create_specific_album_tracks(request, album_id):
 
       if len(exist) == 0:
 
-        url_artists = "/artists/{}".format(album_exist[0].artist_id.ID)
-        url_albums = "/albums/{}".format(album_id)
-        url_self_tracks = "/tracks/{}".format(ID_encoded)
+        url_artists = "https://{}/artists/{}".format(request.get_host(), album_exist[0].artist_id.ID)
+        url_albums = "https://{}/albums/{}".format(request.get_host(), album_id)
+        url_self_tracks = "https://{}/tracks/{}".format(request.get_host(), ID_encoded)
 
         new_track = Track.objects.create(ID=ID_encoded,
         name=params["name"], duration=params["duration"], times_played=0, 

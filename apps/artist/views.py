@@ -37,9 +37,9 @@ def get_create_artist(request):
     exist = models.Artist.objects.filter(ID=ID_encoded)
     if len(exist) == 0:
 
-      url_albums = "/artists/{}/albums".format(ID_encoded)
-      url_tracks = "/artists/{}/tracks".format(ID_encoded)
-      url_self_artist = "/artists/{}".format(ID_encoded)
+      url_albums = "https://{}/artists/{}/albums".format(request.get_host(), ID_encoded)
+      url_tracks = "https://{}/artists/{}/tracks".format(request.get_host(), ID_encoded)
+      url_self_artist = "https://{}/artists/{}".format(request.get_host(), ID_encoded)
 
       new_artist = models.Artist.objects.create(ID=ID_encoded,
       name=name, age=age, albums=url_albums, tracks=url_tracks,
@@ -126,9 +126,9 @@ def get_create_artist_album(request, artist_id):
 
         if len(exist) == 0:
 
-          url_artists = "/artists/{}".format(artist_id)
-          url_tracks = "/albums/{}/tracks".format(ID_encoded)
-          url_self_album = "/albums/{}".format(ID_encoded)
+          url_artists = "https://{}/artists/{}".format(request.get_host(), artist_id)
+          url_tracks = "https://{}/albums/{}/tracks".format(request.get_host(), ID_encoded)
+          url_self_album = "https://{}/albums/{}".format(request.get_host(), ID_encoded)
 
           new_artist = Album.objects.create(ID=ID_encoded,
           name=params["name"], genre=params["genre"], artists=url_artists, tracks=url_tracks,
