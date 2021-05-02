@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from . import models
 from django.views.decorators.csrf import csrf_exempt
 import json
@@ -20,7 +20,7 @@ def get_track(request):
     return JsonResponse(tracks_array, status=200, safe=False)
 
   else:
-    return JsonResponse({}, status=405)
+    return HttpResponse(status=405)
 
 @csrf_exempt
 def get_specific_track(request, track_id):
@@ -33,20 +33,20 @@ def get_specific_track(request, track_id):
     'album': exist[0].albums, 'self': exist[0].self_url}, status=200)
     
     else:
-      return JsonResponse({}, status=404)
+      return HttpResponse(status=404)
 
   elif request.method == 'DELETE':
     exist = models.Track.objects.filter(ID=track_id)
 
     if len(exist) != 0:
       exist[0].delete()
-      return JsonResponse({}, status=204)
+      return HttpResponse(status=204)
 
     else:
-      return JsonResponse({}, status=404)
+      return HttpResponse(status=404)
 
   else:
-    return JsonResponse({}, status=405)
+    return HttpResponse(status=405)
 
 @csrf_exempt
 def play_track(request, track_id):
@@ -58,10 +58,10 @@ def play_track(request, track_id):
       track[0].times_played += 1
       track[0].save()
 
-      return JsonResponse({}, status=200)
+      return HttpResponse(status=200)
 
     else:
-      return JsonResponse({}, status=404)
+      return HttpResponse(status=404)
   
   else:
-    return JsonResponse({}, status=405)
+    return HttpResponse(status=405)
