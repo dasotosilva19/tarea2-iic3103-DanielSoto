@@ -32,7 +32,7 @@ def get_create_artist(request):
 
     name = params['name']
     age = params['age']
-    ID_encoded = b64encode(name.encode()).decode('utf-8')
+    ID_encoded = b64encode(name.encode()).decode('utf-8')[0:22]
 
     exist = models.Artist.objects.filter(ID=ID_encoded)
     if len(exist) == 0:
